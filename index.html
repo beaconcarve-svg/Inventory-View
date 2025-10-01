@@ -84,14 +84,9 @@
     const columnMap = {
       "12": [ {index:10,name:"Color"}, {index:15,name:"Quantity"} ], // Mugs
       "13": [ {index:2,name:"Size"}, {index:10,name:"Color"}, {index:15,name:"Quantity"} ], // Water Bottles
-      "22": [ {index:2,name:"Type"}, {index:10,name:"Color"}, {index:15,name:"Quantity"} ] // Keychains
+      "26": [ {index:2,name:"Shape"}, {index:10,name:"Material"}, {index:15,name:"Quantity"} ] // Keychains
     };
 
-    const productTitles = {
-      "12": "Mugs",
-      "13": "Water Bottles",
-      "22": "Keychains"
-    };
 
     // -----------------------------
     // Get pattern from URL
@@ -102,7 +97,7 @@
     // -----------------------------
     // CSV link from "Publish to web" Public Inventory tab
     // -----------------------------
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/YOUR_PUBLIC_TAB_ID/pub?output=csv";
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv";
 
     // -----------------------------
     // Parse CSV
@@ -127,12 +122,6 @@
           const colsToShow = columnMap[prefix] || [];
 
           // Set dynamic product title
-          document.getElementById("product-title").innerText = productTitles[prefix] || "Inventory";
-
-          if(filtered.length === 0){
-            document.getElementById("inventory-table").innerHTML = "No items match this product.";
-            return;
-          }
 
           // Build table
           let html = "<table><tr>";
