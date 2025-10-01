@@ -14,15 +14,17 @@
     }
 
     .table-container {
-      max-height: 250px; /* vertical scroll height */
+      max-height: 500px; /* vertical scroll height */
       overflow-y: auto;   /* vertical scroll */
+      overflow-x: auto;   /* horizontal scroll if needed */
+      border: 1px solid #2D6A4F; /* optional border around table */
     }
 
     table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 0px;
-      font-family: 'Open Sans', sans-serif;
+      min-width: 600px;
+      table-layout: fixed; /* enforces column widths */
     }
 
     th {
@@ -39,7 +41,9 @@
       background-color: #ffffff; /* turquoise */
       padding: 10px;
       border-bottom: 1px solid #2D6A4F;
-      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap; /* prevent wrapping */
     }
 
     tr:hover td {
@@ -47,13 +51,6 @@
       color: white;
       transition: 0.2s;
     }
-
-    /* Custom column widths */
-    .col-size { width: 20px; }
-    .col-type { width: 40px; }
-    .col-colour { width: 40px; }
-    .col-quantity { width: 20px; }
-
   </style>
 </head>
 <body>
@@ -61,9 +58,9 @@
 
   <script>
     const columnMap = {
-      "12": [ {index:3,name:"Colour",class:"col-colour"}, {index:4,name:"Quantity",class:"col-quantity"} ], // Mugs
-      "13": [ {index:2,name:"Size",class:"col-size"}, {index:3,name:"Colour",class:"col-colour"}, {index:4,name:"Quantity",class:"col-quantity"} ], // Water Bottles
-      "26": [ {index:1,name:"Material",class:"col-type"}, {index:3,name:"Colour",class:"col-colour"}, {index:4,name:"Quantity",class:"col-quantity"} ] // Keychains
+      "12": [ {index:3,name:"Colour",width:400}, {index:4,name:"Quantity",width:200} ], // Mugs
+      "13": [ {index:2,name:"Size",width:200}, {index:3,name:"Colour",width:400}, {index:4,name:"Quantity",width:200} ], // Water Bottles
+      "26": [ {index:1,name:"Material",width:400}, {index:3,name:"Colour",width:400}, {index:4,name:"Quantity",width:200} ] // Keychains
     };
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -91,13 +88,16 @@
             return;
           }
 
-          let html = "<table><tr>";
-          colsToShow.forEach(c => html += `<th class="${c.class}">${c.name}</th>`);
+          // Build table with <colgroup> for exact widths
+          let html = "<table><colgroup>";
+          colsToShow.forEach(c => html += `<col style="width:${c.width}px">`);
+          html += "</colgroup><tr>";
+          colsToShow.forEach(c => html += `<th>${c.name}</th>`);
           html += "</tr>";
 
           filtered.forEach(row => {
             html += "<tr>";
-            colsToShow.forEach(c => html += `<td class="${c.class}">${row[c.index]}</td>`);
+            colsToShow.forEach(c => html += `<td>${row[c.index]}</td>`);
             html += "</tr>";
           });
 
@@ -114,4 +114,3 @@
   </script>
 </body>
 </html>
-
