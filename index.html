@@ -10,17 +10,24 @@
       background-color: #ffffff;
       color: #202124;
       margin: 0;
-      padding: 0;
+      padding: 10px;
+    }
+
+    .table-container {
+      max-height: 500px; /* vertical scroll height */
+      overflow-y: auto;   /* vertical scroll */
+      overflow-x: auto;   /* horizontal scroll if needed */
     }
 
     table {
       border-collapse: collapse;
       width: 100%;
+      min-width: 600px;
       font-family: 'Open Sans', sans-serif;
     }
 
     th {
-      background-color: #1B4332; /* Dark turquoise for header */
+      background-color: #1B4332; /* Dark turquoise */
       color: white;
       padding: 10px;
       text-align: left;
@@ -30,10 +37,10 @@
     }
 
     td {
-      background-color: #ffffff; /* Accent turquoise */
+      background-color: #ffffff; /* turquoise */
       padding: 10px;
-      border-bottom: 1px solid #2D6A4F; /* darker line between items */
-      white-space: nowrap; /* prevent wrapping to multiple lines */
+      border-bottom: 1px solid #2D6A4F;
+      white-space: nowrap;
     }
 
     tr:hover td {
@@ -42,30 +49,32 @@
       transition: 0.2s;
     }
 
-    /* remove responsive block style so each item stays on one row */
-    @media screen and (max-width: 600px) {
-      table, thead, tbody, th, td, tr {
-        display: table; /* keep regular table layout */
-      }
-      td::before {
-        display: none;
+    /* Custom column widths */
+    .col-size { width: 600px; }
+    .col-type { width: 400px; }
+    .col-colour { width: 400px; }
+    .col-quantity { width: 200px; }
+
+    /* Make table responsive for small screens */
+    @media screen and (max-width: 800px) {
+      .col-size, .col-colour, .col-quantity, .col-type {
+        width: auto;
       }
     }
   </style>
 </head>
 <body>
-  <div id="inventory-table"></div>
+  <div class="table-container" id="inventory-table">Loading...</div>
 
   <script>
-    // Column mapping based on product type
     const columnMap = {
-      "12": [ {index:3,name:"Colour"}, {index:4,name:"Quantity"} ], // Mugs
-      "13": [ {index:2,name:"Size"}, {index:3,name:"Colour"}, {index:4,name:"Quantity"} ], // Water Bottles
-      "26": [ {index:1,name:"Shape"}, {index:3,name:"Material"}, {index:4,name:"Quantity"} ] // Keychains
+      "12": [ {index:3,name:"Colour",class:"col-colour"}, {index:4,name:"Quantity",class:"col-quantity"} ], // Mugs
+      "13": [ {index:2,name:"Size",class:"col-size"}, {index:3,name:"Colour",class:"col-colour"}, {index:4,name:"Quantity",class:"col-quantity"} ], // Water Bottles
+      "26": [ {index:1,name:"Material",class:"col-type"}, {index:3,name:"Colour",class:"col-colour"}, {index:4,name:"Quantity",class:"col-quantity"} ] // Keychains
     };
 
     const urlParams = new URLSearchParams(window.location.search);
-    const patternValue = urlParams.get('pattern') || "12---"; // default Mugs
+    const patternValue = urlParams.get('pattern') || "12---";
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv";
 
@@ -90,12 +99,12 @@
           }
 
           let html = "<table><tr>";
-          colsToShow.forEach(c => html += `<th>${c.name}</th>`);
+          colsToShow.forEach(c => html += `<th class="${c.class}">${c.name}</th>`);
           html += "</tr>";
 
           filtered.forEach(row => {
             html += "<tr>";
-            colsToShow.forEach(c => html += `<td>${row[c.index]}</td>`);
+            colsToShow.forEach(c => html += `<td class="${c.class}">${row[c.index]}</td>`);
             html += "</tr>";
           });
 
