@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Inventory</title>
-  <!-- Use Open Sans from Google Fonts -->
+  <!-- Open Sans font -->
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
   <style>
     body {
@@ -11,10 +11,6 @@
       background-color: #ffffff;
       color: #202124;
       margin: 20px;
-    }
-
-    h2 {
-      color: #1B4332; /* Dark Forest Green for heading */
     }
 
     table {
@@ -25,7 +21,7 @@
     }
 
     th {
-      background-color: #2D6A4F; /* Medium Leaf Green */
+      background-color: #1B4332; /* Darkest turquoise from site */
       color: white;
       padding: 10px;
       text-align: left;
@@ -34,17 +30,18 @@
     }
 
     td {
-      background-color: #ffffff; /* White background for rows */
+      background-color: #95D5B2; /* Alternate turquoise (lighter) */
       padding: 10px;
-      border-bottom: 1px solid #95D5B2; /* Pale Mint Green row divider */
+      border-bottom: 1px solid #95D5B2;
     }
 
     tr:nth-child(even) td {
-      background-color: #f7fdf8; /* Very light green alternate row */
+      background-color: #2D6A4F; /* Lighter turquoise alternative row */
+      color: white;
     }
 
     tr:hover td {
-      background-color: #40916C; /* Lighter Fresh Green on hover */
+      background-color: #1B4332; /* Darker turquoise hover */
       color: white;
       transition: 0.2s;
     }
@@ -74,47 +71,25 @@
   </style>
 </head>
 <body>
-  <h2 id="product-title">Inventory</h2>
   <div id="inventory-table">Loading...</div>
 
   <script>
-    // -----------------------------
-    // Column mapping for products
-    // -----------------------------
     const columnMap = {
-      "12": [ {index:10,name:"Color"}, {index:15,name:"Quantity"} ], // Mugs
-      "13": [ {index:2,name:"Size"}, {index:10,name:"Color"}, {index:15,name:"Quantity"} ], // Water Bottles
-      "22": [ {index:2,name:"Type"}, {index:10,name:"Color"}, {index:15,name:"Quantity"} ] // Keychains
+      "12": [ {index:3,name:"Color"}, {index:4,name:"Quantity"} ], // Mugs
+      "13": [ {index:2,name:"Size"}, {index:3,name:"Color"}, {index:4,name:"Quantity"} ], // Water Bottles
+      "26": [ {index:1,name:"Shape"}, {index:3,name:"Material"}, {index:4,name:"Quantity"} ] // Keychains
     };
 
-    const productTitles = {
-      "12": "Mugs",
-      "13": "Water Bottles",
-      "22": "Keychains"
-    };
-
-    // -----------------------------
-    // Get pattern from URL
-    // -----------------------------
     const urlParams = new URLSearchParams(window.location.search);
     const patternValue = urlParams.get('pattern') || "12---"; // default to Mugs
 
-    // -----------------------------
-    // CSV link from "Publish to web" Public Inventory tab
-    // -----------------------------
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv";
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv/pub?output=csv";
 
-    // -----------------------------
-    // Parse CSV
-    // -----------------------------
     function parseCSV(text) {
       const lines = text.trim().split("\n");
       return lines.map(line => line.split(","));
     }
 
-    // -----------------------------
-    // Load and display inventory
-    // -----------------------------
     function loadInventory(pattern) {
       fetch(csvUrl)
         .then(res => res.text())
@@ -126,15 +101,11 @@
           const filtered = data.filter(row => regex.test(row[0]));
           const colsToShow = columnMap[prefix] || [];
 
-          // Set dynamic product title
-          document.getElementById("product-title").innerText = productTitles[prefix] || "Inventory";
-
           if(filtered.length === 0){
             document.getElementById("inventory-table").innerHTML = "No items match this product.";
             return;
           }
 
-          // Build table
           let html = "<table><tr>";
           colsToShow.forEach(c => html += `<th>${c.name}</th>`);
           html += "</tr>";
@@ -153,16 +124,9 @@
         });
     }
 
-    // -----------------------------
-    // Initial load
-    // -----------------------------
     loadInventory(patternValue);
-
-    // -----------------------------
-    // Optional: auto-refresh every 1 min
-    // -----------------------------
     setInterval(() => loadInventory(patternValue), 60000);
-
   </script>
 </body>
 </html>
+
