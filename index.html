@@ -3,25 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>Inventory</title>
-  <!-- Open Sans font -->
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Open Sans', sans-serif;
       background-color: #ffffff;
       color: #202124;
-      margin: 20px;
+      margin: 0;
+      padding: 0;
     }
 
     table {
       border-collapse: collapse;
       width: 100%;
       font-family: 'Open Sans', sans-serif;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
     th {
-      background-color: #1B4332; /* Darkest turquoise from site */
+      background-color: #1B4332; /* Darkest turquoise */
       color: white;
       padding: 10px;
       text-align: left;
@@ -30,30 +29,28 @@
     }
 
     td {
-      background-color: #95D5B2; /* Alternate turquoise (lighter) */
+      background-color: #95D5B2; /* Light turquoise */
       padding: 10px;
       border-bottom: 1px solid #95D5B2;
     }
 
     tr:nth-child(even) td {
-      background-color: #2D6A4F; /* Lighter turquoise alternative row */
+      background-color: #2D6A4F; /* Medium turquoise for alternating rows */
       color: white;
     }
 
     tr:hover td {
-      background-color: #1B4332; /* Darker turquoise hover */
+      background-color: #1B4332; /* Dark turquoise hover */
       color: white;
       transition: 0.2s;
     }
 
-    /* Responsive table scroll on small screens */
+    /* Responsive for small screens */
     @media screen and (max-width: 600px) {
       table, thead, tbody, th, td, tr {
         display: block;
       }
-      th { 
-        text-align: right; 
-      }
+      th { display: none; }
       tr { margin-bottom: 15px; }
       td { 
         text-align: right; 
@@ -71,19 +68,20 @@
   </style>
 </head>
 <body>
-  <div id="inventory-table">Loading...</div>
+  <div id="inventory-table"></div>
 
   <script>
+    // Column mapping
     const columnMap = {
-      "12": [ {index:3,name:"Color"}, {index:4,name:"Quantity"} ], // Mugs
-      "13": [ {index:2,name:"Size"}, {index:3,name:"Color"}, {index:4,name:"Quantity"} ], // Water Bottles
-      "26": [ {index:1,name:"Shape"}, {index:3,name:"Material"}, {index:4,name:"Quantity"} ] // Keychains
+      "12": [ {index:3,name:"Colour"}, {index:4,name:"Quantity"} ], // Mugs
+      "13": [ {index:2,name:"Size"}, {index:3,name:"Colour"}, {index:4,name:"Quantity"} ], // Water Bottles
+      "26": [ {index:1,name:"Shape"}, {index:3,name:"Colour"}, {index:4,name:"Quantity"} ] // Keychains
     };
 
     const urlParams = new URLSearchParams(window.location.search);
-    const patternValue = urlParams.get('pattern') || "12---"; // default to Mugs
+    const patternValue = urlParams.get('pattern') || "12---"; // default
 
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv/pub?output=csv";
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv";
 
     function parseCSV(text) {
       const lines = text.trim().split("\n");
@@ -129,4 +127,3 @@
   </script>
 </body>
 </html>
-
