@@ -14,9 +14,8 @@
     }
 
     .table-container {
-      max-height: 500px; /* vertical scroll height */
+      max-height: 250px; /* vertical scroll height */
       overflow-y: auto;   /* vertical scroll */
-      overflow-x: auto;   /* horizontal scroll if needed */
     }
 
     table {
@@ -50,17 +49,11 @@
     }
 
     /* Custom column widths */
-    .col-size { width: 600px; }
-    .col-type { width: 400px; }
-    .col-colour { width: 400px; }
-    .col-quantity { width: 200px; }
+    .col-size { width: 100px; }
+    .col-type { width: 150px; }
+    .col-colour { width: 150px; }
+    .col-quantity { width: 100px; }
 
-    /* Make table responsive for small screens */
-    @media screen and (max-width: 800px) {
-      .col-size, .col-colour, .col-quantity, .col-type {
-        width: auto;
-      }
-    }
   </style>
 </head>
 <body>
