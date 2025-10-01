@@ -20,44 +20,35 @@
     }
 
     th {
-      background-color: #95D5B2; /* Same color as your sheet’s separating lines */
-      color: #000000;
+      background-color: #1B4332; /* Dark turquoise for header */
+      color: white;
       padding: 10px;
       text-align: left;
       font-weight: 600;
       font-size: 16px;
-      border-bottom: 2px solid #95D5B2; /* same as header background to separate items */
+      border-bottom: 2px solid #1B4332;
     }
 
     td {
-      background-color: #ffffff; /* all rows white */
+      background-color: #ffffff; /* Accent turquoise */
       padding: 10px;
-      border-bottom: 1px solid #95D5B2; /* sheet line color for separation */
+      border-bottom: 1px solid #2D6A4F; /* darker line between items */
+      white-space: nowrap; /* prevent wrapping to multiple lines */
     }
 
     tr:hover td {
-      background-color: #e6f2ee; /* very subtle hover highlight */
+      background-color: #40916C; /* darker turquoise hover */
+      color: white;
       transition: 0.2s;
     }
 
-    /* Responsive for small screens */
+    /* remove responsive block style so each item stays on one row */
     @media screen and (max-width: 600px) {
       table, thead, tbody, th, td, tr {
-        display: block;
-      }
-      th { display: none; }
-      tr { margin-bottom: 15px; }
-      td { 
-        text-align: right; 
-        padding-left: 50%; 
-        position: relative;
+        display: table; /* keep regular table layout */
       }
       td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        font-weight: bold;
-        text-align: left;
+        display: none;
       }
     }
   </style>
@@ -66,22 +57,20 @@
   <div id="inventory-table"></div>
 
   <script>
-    // Map columns for all product types
-    const columnMap = [
-      {index:2, name:"Size"},
-      {index:3, name:"Colour"},
-      {index:4, name:"Quantity"},
-      {index:1, name:"Type"}
-    ];
+    // Column mapping based on product type
+    const columnMap = {
+      "12": [ {index:3,name:"Colour"}, {index:4,name:"Quantity"} ], // Mugs
+      "13": [ {index:2,name:"Size"}, {index:3,name:"Colour"}, {index:4,name:"Quantity"} ], // Water Bottles
+      "26": [ {index:1,name:"Shape"}, {index:3,name:"Material"}, {index:4,name:"Quantity"} ] // Keychains
+    };
 
     const urlParams = new URLSearchParams(window.location.search);
-    const patternValue = urlParams.get('pattern') || "12---";
+    const patternValue = urlParams.get('pattern') || "12---"; // default Mugs
 
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv";
 
     function parseCSV(text) {
-      const lines = text.trim().split("\n");
-      return lines.map(line => line.split(","));
+      return text.trim().split("\n").map(line => line.split(","));
     }
 
     function loadInventory(pattern) {
@@ -89,9 +78,11 @@
         .then(res => res.text())
         .then(text => {
           const data = parseCSV(text);
+          const prefix = pattern.substring(0,2);
           const regex = new RegExp("^" + pattern.replace(/-/g,".") + "$");
 
           const filtered = data.filter(row => regex.test(row[0]));
+          const colsToShow = columnMap[prefix] || [];
 
           if(filtered.length === 0){
             document.getElementById("inventory-table").innerHTML = "No items match this product.";
@@ -99,13 +90,12 @@
           }
 
           let html = "<table><tr>";
-          // Show all categories in header
-          columnMap.forEach(c => html += `<th>${c.name}</th>`);
+          colsToShow.forEach(c => html += `<th>${c.name}</th>`);
           html += "</tr>";
 
           filtered.forEach(row => {
             html += "<tr>";
-            columnMap.forEach(c => html += `<td data-label="${c.name}">${row[c.index]}</td>`);
+            colsToShow.forEach(c => html += `<td>${row[c.index]}</td>`);
             html += "</tr>";
           });
 
