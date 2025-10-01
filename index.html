@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Inventory</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #000; padding: 5px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h2>Current Inventory</h2>
+  <div id="inventory-table">Loading...</div>
+
+
+  <script>
+    // -----------------------------
+    // Column mapping for products
+    // -----------------------------
+    const columnMap = {
+      "12": [ {index:3,name:"Color"}, {index:4,name:"Quantity"} ], // Mugs
+      "13": [ {index:2,name:"Size"}, {index:3,name:"Color"}, {index:4,name:"Quantity"} ], // Water Bottles
+      "26": [ {index:1,name:"Type"}, {index:3,name:"Color"}, {index:4,name:"Quantity"} ] // Wood Keychains
+    };
+
+
+    // -----------------------------
+    // Get pattern from URL
+    // -----------------------------
+    const urlParams = new URLSearchParams(window.location.search);
+    const patternValue = urlParams.get('pattern') || "12---"; // default to Mugs
+
+
+    // -----------------------------
+    // CSV link from "Publish to web"
+    // -----------------------------
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv";
+
+
+    // -----------------------------
+    // Helper function to parse CSV
+    // -----------------------------
+    function parseCSV(text) {
+      const lines = text.trim().split("\n");
+      return lines.map(line => line.split(","));
+    }
+
+
+    // -----------------------------
+    // Load and display inventory
+    // -----------------------------
+    function loadInventory(pattern) {
+      fetch(csvUrl)
+        .then(res => res.text())
+        .then(text => {
+          const data = parseCSV(text);
+
+
+          // Determine prefix (first 2 characters) for column mapping
+          const prefix = pattern.substring(0,2);
+          const regex = new RegExp("^" + pattern.replace(/-/g,".") + "$");
+
+
+          // Filter rows that match the pattern
+          const filtered = data.filter(row => regex.test(row[0]));
+
+
+          const colsToShow = columnMap[prefix] || [];
+
+
+          if(filtered.length === 0){
+            document.getElementById("inventory-table").innerHTML = "No items match this product.";
+            return;
+          }
+
+
+          // Build table HTML
+          let html = "<table><tr>";
+          colsToShow.forEach(c => html += `<th>${c.name}</th>`);
+          html += "</tr>";
+
+
+          filtered.forEach(row => {
+            html += "<tr>";
+            colsToShow.forEach(c => html += `<td>${row[c.index]}</td>`);
+            html += "</tr>";
+          });
+
+
+          html += "</table>";
+          document.getElementById("inventory-table").innerHTML = html;
+        })
+        .catch(err => {
+          document.getElementById("inventory-table").innerHTML = "Error loading inventory: " + err;
+        });
+    }
+
+
+    // -----------------------------
+    // Initial load
+    // -----------------------------
+    loadInventory(patternValue);
+
+
+    // -----------------------------
+    // Optional: auto-refresh every 1 minute
+    // -----------------------------
+    setInterval(() => loadInventory(patternValue), 60000);
+
+
+  </script>
+</body>
+</html>
