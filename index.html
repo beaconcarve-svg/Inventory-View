@@ -84,9 +84,14 @@
     const columnMap = {
       "12": [ {index:10,name:"Color"}, {index:15,name:"Quantity"} ], // Mugs
       "13": [ {index:2,name:"Size"}, {index:10,name:"Color"}, {index:15,name:"Quantity"} ], // Water Bottles
-      "26": [ {index:2,name:"Shape"}, {index:10,name:"Material"}, {index:15,name:"Quantity"} ] // Keychains
+      "22": [ {index:2,name:"Type"}, {index:10,name:"Color"}, {index:15,name:"Quantity"} ] // Keychains
     };
 
+    const productTitles = {
+      "12": "Mugs",
+      "13": "Water Bottles",
+      "22": "Keychains"
+    };
 
     // -----------------------------
     // Get pattern from URL
@@ -122,6 +127,12 @@
           const colsToShow = columnMap[prefix] || [];
 
           // Set dynamic product title
+          document.getElementById("product-title").innerText = productTitles[prefix] || "Inventory";
+
+          if(filtered.length === 0){
+            document.getElementById("inventory-table").innerHTML = "No items match this product.";
+            return;
+          }
 
           // Build table
           let html = "<table><tr>";
