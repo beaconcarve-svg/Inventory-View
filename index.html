@@ -16,11 +16,16 @@
     table {
       border-collapse: collapse;
       width: 100%;
-      table-layout: fixed; /* enforce column widths */
+      table-layout: fixed; /* Enforce column widths */
+    }
+
+    col {
+      /* Optional for debugging column widths - remove or customize */
+      background-color: rgba(0, 128, 0, 0.02);
     }
 
     th {
-      background-color: #1B4332; /* Dark turquoise */
+      background-color: #1B4332;
       color: white;
       padding: 10px;
       text-align: left;
@@ -35,11 +40,12 @@
       border-bottom: 1px solid #2D6A4F;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap; /* keeps text on one line */
+      white-space: nowrap;
+      max-width: 0; /* Important for ellipsis to work in fixed layout */
     }
 
     tr:hover td {
-      background-color: #1B4332; /* hover effect */
+      background-color: #1B4332;
       color: white;
       transition: 0.2s;
     }
@@ -49,11 +55,11 @@
   <div id="inventory-table">Loading...</div>
 
   <script>
-    // Use pixel values or percentages for column widths
+    // Define which columns to show and their widths per product type
     const columnMap = {
-      "12": [ {index:3,name:"Colour",width:"125px"}, {index:4,name:"Quantity",width:"75px"} ], // Mugs
-      "13": [ {index:2,name:"Size",width:"75px"}, {index:3,name:"Colour",width:"125px"}, {index:4,name:"Quantity",width:"75px"} ], // Water Bottles
-      "26": [ {index:1,name:"Shape",width:"125px"}, {index:3,name:"Material",width:"125px"}, {index:4,name:"Quantity",width:"75px"} ] // Keychains
+      "12": [ {index:3, name:"Colour", width:"125px"}, {index:4, name:"Quantity", width:"75px"} ],
+      "13": [ {index:2, name:"Size", width:"75px"}, {index:3, name:"Colour", width:"125px"}, {index:4, name:"Quantity", width:"75px"} ],
+      "26": [ {index:1, name:"Shape", width:"125px"}, {index:3, name:"Material", width:"125px"}, {index:4, name:"Quantity", width:"75px"} ]
     };
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -70,23 +76,25 @@
         .then(res => res.text())
         .then(text => {
           const data = parseCSV(text);
-          const prefix = pattern.substring(0,2);
-          const regex = new RegExp("^" + pattern.replace(/-/g,".") + "$");
+          const prefix = pattern.substring(0, 2);
+          const regex = new RegExp("^" + pattern.replace(/-/g, ".") + "$");
 
           const filtered = data.filter(row => regex.test(row[0]));
           const colsToShow = columnMap[prefix] || [];
 
-          if(filtered.length === 0){
+          if (filtered.length === 0) {
             document.getElementById("inventory-table").innerHTML = "No items match this product.";
             return;
           }
 
-          // Build table with colgroup for exact widths
+          // Build the HTML table
           let html = "<table><colgroup>";
-          colsToShow.forEach(c => html += `<col style="width:${c.width}">`);
-          html += "</colgroup><tr>";
+          colsToShow.forEach(c => {
+            html += `<col style="width: ${c.width};">`;
+          });
+          html += "</colgroup><thead><tr>";
           colsToShow.forEach(c => html += `<th>${c.name}</th>`);
-          html += "</tr>";
+          html += "</tr></thead><tbody>";
 
           filtered.forEach(row => {
             html += "<tr>";
@@ -94,7 +102,7 @@
             html += "</tr>";
           });
 
-          html += "</table>";
+          html += "</tbody></table>";
           document.getElementById("inventory-table").innerHTML = html;
         })
         .catch(err => {
@@ -107,4 +115,5 @@
   </script>
 </body>
 </html>
+
 
