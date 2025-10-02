@@ -4,52 +4,55 @@
   <meta charset="UTF-8">
   <title>Inventory</title>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Open Sans', sans-serif;
-      background-color: #ffffff;
-      color: #202124;
-      margin: 0;
-      padding: 10px;
-    }
+ <style>
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #ffffff;
+    color: #202124;
+    margin: 0;
+    padding: 10px;
+  }
 
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      table-layout: fixed; /* Enforce column widths */
-    }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+    user-select: none; /* Disable selection on table */
+  }
 
-    col {
-      /* Optional for debugging column widths - remove or customize */
-      background-color: rgba(0, 128, 0, 0.02);
-    }
+  col {
+    background-color: rgba(0, 128, 0, 0.02); /* optional, for debugging column widths */
+  }
 
-    th {
-      background-color: #1B4332;
-      color: white;
-      padding: 10px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 16px;
-      border-bottom: 2px solid #1B4332;
-    }
+  th {
+    background-color: #1B4332;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 16px;
+    border-bottom: 2px solid #1B4332;
+    user-select: none;
+  }
 
-    td {
-      background-color: #ffffff;
-      padding: 10px;
-      border-bottom: 1px solid #2D6A4F;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 0; /* Important for ellipsis to work in fixed layout */
-    }
+  td {
+    background-color: #ffffff;
+    padding: 10px;
+    border-bottom: 1px solid #2D6A4F;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 0;
+    user-select: none;
+  }
 
-    tr:hover td {
-      background-color: #1B4332;
-      color: white;
-      transition: 0.2s;
-    }
-  </style>
+  /* Hover effect removed */
+  /* tr:hover td {
+    background-color: #1B4332;
+    color: white;
+    transition: 0.2s;
+  } */
+</style>
 </head>
 <body>
   <div id="inventory-table">Loading...</div>
