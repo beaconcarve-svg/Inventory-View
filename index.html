@@ -13,73 +13,73 @@
       padding: 10px;
     }
 
-    table {
-      border-collapse: collapse;
+    /* Make table scrollable if too wide */
+    #inventory-wrapper {
+      overflow-x: auto;
       width: 100%;
-      table-layout: fixed;
-      user-select: none; /* Disable selection */
     }
 
-    col {
-      background-color: rgba(0, 128, 0, 0.02); /* Optional: debug column widths */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: auto; /* Auto-sizing columns */
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      white-space: nowrap; /* Prevent wrapping */
+      border-bottom: 1px solid #2D6A4F;
     }
 
     th {
       background-color: #1B4332;
       color: white;
-      padding: 10px;
-      text-align: left;
       font-weight: 600;
       font-size: 16px;
       border-bottom: 2px solid #1B4332;
+    }
+
+    /* Optional: Prevent text selection */
+    th, td {
       user-select: none;
     }
 
-    td {
-      background-color: #ffffff;
-      padding: 10px;
-      border-bottom: 1px solid #2D6A4F;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 0;
-      user-select: none;
-    }
-
-    /* Removed hover effects completely */
+    /* Removed hover effects entirely */
   </style>
 </head>
 <body>
-  <div id="inventory-table">Loading...</div>
+  <div id="inventory-wrapper">
+    <div id="inventory-table">Loading...</div>
+  </div>
 
   <script>
-    // Define columns to show per product type
+    // Define columns per pattern prefix
     const columnMap = {
       "12": [
-        { index: 1, name: "Type", width: "100px" },
-        { index: 3, name: "Colour", width: "100px" },
-        { index: 4, name: "Quantity", width: "75px" }
+        { index: 1, name: "Type" },
+        { index: 3, name: "Colour" },
+        { index: 4, name: "Quantity" }
       ],
       "13": [
-        { index: 1, name: "Model", width: "100px" },
-        { index: 2, name: "Size", width: "75px" },
-        { index: 3, name: "Colour", width: "100px" },
-        { index: 4, name: "Quantity", width: "75px" }
+        { index: 1, name: "Model" },
+        { index: 2, name: "Size" },
+        { index: 3, name: "Colour" },
+        { index: 4, name: "Quantity" }
       ],
       "26": [
-        { index: 1, name: "Shape", width: "100px" },
-        { index: 2, name: "Style", width: "100px" },
-        { index: 3, name: "Material", width: "100px" },
-        { index: 4, name: "Quantity", width: "75px" }
+        { index: 1, name: "Shape" },
+        { index: 2, name: "Style" },
+        { index: 3, name: "Material" },
+        { index: 4, name: "Quantity" }
       ]
     };
 
     const urlParams = new URLSearchParams(window.location.search);
     const patternValue = urlParams.get('pattern') || "12---";
 
-    // Add a cache-busting timestamp
-    const timestamp = new Date().getTime();
-    const csvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv&t=${timestamp}`;
+    // Add cache-busting timestamp
+    const csvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv&t=${Date.now()}`;
 
     function parseCSV(text) {
       return text.trim().split("\n").map(line => line.split(","));
@@ -100,12 +100,8 @@
             return;
           }
 
-          // Build table
-          let html = "<table><colgroup>";
-          colsToShow.forEach(c => {
-            html += `<col style="width: ${c.width};">`;
-          });
-          html += "</colgroup><thead><tr>";
+          // Build table without colgroup or fixed widths
+          let html = "<table><thead><tr>";
           colsToShow.forEach(c => html += `<th>${c.name}</th>`);
           html += "</tr></thead><tbody>";
 
@@ -123,13 +119,9 @@
         });
     }
 
-    // Load immediately and refresh every 60s
     loadInventory(patternValue);
     setInterval(() => loadInventory(patternValue), 60000);
   </script>
-</body>
-</html>
-
 </body>
 </html>
 
