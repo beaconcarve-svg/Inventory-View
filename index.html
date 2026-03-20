@@ -4,45 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inventory</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"> <!-- Font: Roboto -->
   <style>
     body {
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Open Sans', sans-serif;  /* Apply Roboto font */
       background-color: #ffffff;
       color: #202124;
       margin: 0;
       padding: 10px;
+      display: flex;
+      justify-content: center; /* Center horizontally */
+      align-items: center;     /* Center vertically */
+      height: 100vh;           /* Full viewport height */
+      text-align: center;      /* Center text horizontally */
     }
 
     #inventory-wrapper {
       overflow-x: auto;
       width: 100%;
+      max-width: 600px; /* Optional: Set a max width for better appearance */
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: auto;
+    #inventory-table {
+      padding: 20px;
+      font-size: 20px; /* Adjust font size for better readability */
     }
 
-    th, td {
-      padding: 10px;
-      text-align: left;
-      white-space: nowrap;
-      border-bottom: 1px solid #2D6A4F;
-    }
-
-    th {
-      background-color: #1B4332;
-      color: white;
-      font-weight: 600;
-      font-size: 16px;
-      border-bottom: 2px solid #1B4332;
-    }
-
-    th, td {
-      user-select: none;
-    }
   </style>
 </head>
 <body>
@@ -86,8 +73,8 @@
           // Get stock quantity from column 4
           const status = getStockStatus(item[3]);  // Column 4 is index 3
 
-          // Display the stock status
-          document.getElementById("inventory-table").innerHTML = `Stock Status: ${status}`;
+          // Remove "Stock Status:" and just show the stock status text
+          document.getElementById("inventory-table").innerHTML = status;
         })
         .catch(err => {
           document.getElementById("inventory-table").innerHTML = "Error loading inventory";
@@ -100,6 +87,5 @@
     setInterval(() => loadInventory(skuValue), 60000);
   </script>
 </body>
-</html>
 </html>
 
