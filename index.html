@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inventory</title>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
   <style>
@@ -13,7 +14,6 @@
       padding: 10px;
     }
 
-    /* Make table scrollable if too wide */
     #inventory-wrapper {
       overflow-x: auto;
       width: 100%;
@@ -22,13 +22,13 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      table-layout: auto; /* Auto-sizing columns */
+      table-layout: auto;
     }
 
     th, td {
       padding: 10px;
       text-align: left;
-      white-space: nowrap; /* Prevent wrapping */
+      white-space: nowrap;
       border-bottom: 1px solid #2D6A4F;
     }
 
@@ -40,12 +40,9 @@
       border-bottom: 2px solid #1B4332;
     }
 
-    /* Optional: Prevent text selection */
     th, td {
       user-select: none;
     }
-
-    /* Removed hover effects entirely */
   </style>
 </head>
 <body>
@@ -54,7 +51,6 @@
   </div>
 
   <script>
-    // Define columns per pattern prefix
     const columnMap = {
       "12": [
         { index: 1, name: "Type" },
@@ -76,51 +72,53 @@
     };
 
     const urlParams = new URLSearchParams(window.location.search);
-const skuValue = urlParams.get('sku') || "";
-    
-    // Add cache-busting timestamp
+    const skuValue = urlParams.get('sku') || "";
+
+    // CSV URL with cache-busting
     const csvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRlfQw73reyRx8u7l2BddPxwZozhN9dzI5wB6ez0KpvuYfQi6y7vZEF7eX14Hc1GAb1OLdMp0DJEInn/pub?gid=0&single=true&output=csv&cacheBust=${Date.now()}`;
 
     function parseCSV(text) {
       return text.trim().split("\n").map(line => line.split(","));
     }
-function getStockStatus(value) {
-  const qty = parseInt(value);
 
-  if (isNaN(qty)) return "Unknown";
+    function getStockStatus(value) {
+      const qty = parseInt(value);
+      if (isNaN(qty)) return "Unknown";
+      if (qty === 0) return "Out of Stock (0)";
+      if (qty <= 5) return `Low Stock (${qty})`;
+      return `In Stock (${qty})`;
+    }
 
-  if (qty === 0) return "Out of Stock (0)";
-  if (qty <= 5) return `Low Stock (${qty})`;
-  return `In Stock (${qty})`;
-}
- function loadInventory(sku) {
-  fetch(csvUrl)
-    .then(res => res.text())
-    .then(text => {
-      const data = parseCSV(text);
+    function loadInventory(sku) {
+      fetch(csvUrl)
+        .then(res => res.text())
+        .then(text => {
+          const data = parseCSV(text);
 
-      // Find exact SKU match
-      const item = data.find(row => row[0] === sku);
+          // Check if SKU exists and match the first column
+          const item = data.find(row => row[0] && row[0].trim() === sku.trim());
 
-      if (!item) {
-        document.getElementById("inventory-table").innerHTML = "SKU not found";
-        return;
-      }
+          if (!item) {
+            document.getElementById("inventory-table").innerHTML = "SKU not found";
+            return;
+          }
 
-      const status = getStockStatus(item[4]);
+          // Get stock status for the item
+          const status = getStockStatus(item[4]);  // Assuming stock is in column 4
 
-      // ONLY show the result (no table)
-      document.getElementById("inventory-table").innerHTML = status;
-    })
-    .catch(err => {
-      document.getElementById("inventory-table").innerHTML = "Error loading inventory";
-    });
-}
+          // Display status instead of the full table
+          document.getElementById("inventory-table").innerHTML = `Stock Status: ${status}`;
+        })
+        .catch(err => {
+          document.getElementById("inventory-table").innerHTML = "Error loading inventory";
+        });
+    }
 
     loadInventory(skuValue);
-setInterval(() => loadInventory(skuValue), 60000);
+
+    // Refresh every minute
+    setInterval(() => loadInventory(skuValue), 60000);
   </script>
 </body>
 </html>
-
 
