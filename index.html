@@ -51,26 +51,6 @@
   </div>
 
   <script>
-    const columnMap = {
-      "12": [
-        { index: 1, name: "Type" },
-        { index: 3, name: "Colour" },
-        { index: 4, name: "Quantity" }
-      ],
-      "13": [
-        { index: 1, name: "Model" },
-        { index: 2, name: "Size" },
-        { index: 3, name: "Colour" },
-        { index: 4, name: "Quantity" }
-      ],
-      "26": [
-        { index: 1, name: "Shape" },
-        { index: 2, name: "Style" },
-        { index: 3, name: "Material" },
-        { index: 4, name: "Quantity" }
-      ]
-    };
-
     const urlParams = new URLSearchParams(window.location.search);
     const skuValue = urlParams.get('sku') || "";
 
@@ -95,7 +75,7 @@
         .then(text => {
           const data = parseCSV(text);
 
-          // Check if SKU exists and match the first column
+          // Find the SKU by matching column 1 (SKU)
           const item = data.find(row => row[0] && row[0].trim() === sku.trim());
 
           if (!item) {
@@ -103,10 +83,10 @@
             return;
           }
 
-          // Get stock status for the item
-          const status = getStockStatus(item[4]);  // Assuming stock is in column 4
+          // Get stock quantity from column 4
+          const status = getStockStatus(item[3]);  // Column 4 is index 3
 
-          // Display status instead of the full table
+          // Display the stock status
           document.getElementById("inventory-table").innerHTML = `Stock Status: ${status}`;
         })
         .catch(err => {
@@ -120,5 +100,6 @@
     setInterval(() => loadInventory(skuValue), 60000);
   </script>
 </body>
+</html>
 </html>
 
