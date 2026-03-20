@@ -76,51 +76,49 @@
     };
 
     const urlParams = new URLSearchParams(window.location.search);
-    const patternValue = urlParams.get('pattern') || "12---";
-
+const skuValue = urlParams.get('sku') || "";
+    
     // Add cache-busting timestamp
-    const csvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vTqTEmgvW8PXX55T2uNuCJ0T4Vvhsmnwh5_Yb23_mh-z8qm_s1wPpETNpYpl-qONMuvIKpjH3dXisJC/pub?gid=2112846755&single=true&output=csv&t=${Date.now()}`;
+    const csvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRlfQw73reyRx8u7l2BddPxwZozhN9dzI5wB6ez0KpvuYfQi6y7vZEF7eX14Hc1GAb1OLdMp0DJEInn/pub?gid=0&single=true&output=csv&cacheBust=${Date.now()}`;
 
     function parseCSV(text) {
       return text.trim().split("\n").map(line => line.split(","));
     }
+function getStockStatus(value) {
+  const qty = parseInt(value);
 
-    function loadInventory(pattern) {
-      fetch(csvUrl)
-        .then(res => res.text())
-        .then(text => {
-          const data = parseCSV(text);
-          const prefix = pattern.substring(0, 2);
-          const regex = new RegExp("^" + pattern.replace(/-/g, ".") + "$");
-          const filtered = data.filter(row => regex.test(row[0]));
-          const colsToShow = columnMap[prefix] || [];
+  if (isNaN(qty)) return "Unknown";
 
-          if (filtered.length === 0) {
-            document.getElementById("inventory-table").innerHTML = "No items match this product.";
-            return;
-          }
+  if (qty === 0) return "Out of Stock (0)";
+  if (qty <= 5) return `Low Stock (${qty})`;
+  return `In Stock (${qty})`;
+}
+ function loadInventory(sku) {
+  fetch(csvUrl)
+    .then(res => res.text())
+    .then(text => {
+      const data = parseCSV(text);
 
-          // Build table without colgroup or fixed widths
-          let html = "<table><thead><tr>";
-          colsToShow.forEach(c => html += `<th>${c.name}</th>`);
-          html += "</tr></thead><tbody>";
+      // Find exact SKU match
+      const item = data.find(row => row[0] === sku);
 
-          filtered.forEach(row => {
-            html += "<tr>";
-            colsToShow.forEach(c => html += `<td title="${row[c.index]}">${row[c.index]}</td>`);
-            html += "</tr>";
-          });
+      if (!item) {
+        document.getElementById("inventory-table").innerHTML = "SKU not found";
+        return;
+      }
 
-          html += "</tbody></table>";
-          document.getElementById("inventory-table").innerHTML = html;
-        })
-        .catch(err => {
-          document.getElementById("inventory-table").innerHTML = "Error loading inventory: " + err;
-        });
-    }
+      const status = getStockStatus(item[4]);
 
-    loadInventory(patternValue);
-    setInterval(() => loadInventory(patternValue), 60000);
+      // ONLY show the result (no table)
+      document.getElementById("inventory-table").innerHTML = status;
+    })
+    .catch(err => {
+      document.getElementById("inventory-table").innerHTML = "Error loading inventory";
+    });
+}
+
+    loadInventory(skuValue);
+setInterval(() => loadInventory(skuValue), 60000);
   </script>
 </body>
 </html>
